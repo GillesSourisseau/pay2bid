@@ -47,6 +47,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <sourceDirectory>src/main/java</sourceDirectory>
     </build>
 
     <developers>
