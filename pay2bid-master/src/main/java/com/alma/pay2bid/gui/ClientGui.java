@@ -161,6 +161,9 @@ public class ClientGui {
             client.addBidSoldObserver(new IBidSoldObserver() {
                 @Override
                 public void updateBidSold(IClient client) {
+                	System.out.print(client);
+                	System.out.print(auction);
+                	
                     try {
                         auction.setWinner(client.getName());
                     } catch (RemoteException e) {
