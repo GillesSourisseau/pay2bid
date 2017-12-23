@@ -41,4 +41,9 @@ public interface IServer extends Remote {
      * @throws InterruptedException
      */
     void timeElapsed(IClient client) throws RemoteException, InterruptedException;
+
+	void registerCredentials(String username, String password) throws RemoteException, InterruptedException;
+
+	boolean verifyCredentials(String username, String password) throws RemoteException, InterruptedException;
+	
 }

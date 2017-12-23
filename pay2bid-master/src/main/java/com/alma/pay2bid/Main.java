@@ -22,9 +22,9 @@ public class Main {
     private static void startClient(String host, int port) {
         try {
             IServer server = (IServer) LocateRegistry.getRegistry(host, port).lookup("com.alma.pay2bid.server.Server");
-            Client client = new Client(server, "Client " + host);
+            //Client client = new Client(server, "Client " + host);
 
-            ClientGui c = new ClientGui(client, server);
+            ClientGui c = new ClientGui(server);
 
             c.show();
         } catch (Exception e) {
