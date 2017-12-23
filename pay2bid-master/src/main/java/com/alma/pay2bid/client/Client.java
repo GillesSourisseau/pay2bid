@@ -32,6 +32,12 @@ public class Client extends UnicastRemoteObject implements IClient, IBidSoldObse
         private String timeString;
         private long time = TIME_TO_RAISE_BID;
 
+        public TimerManager(String timeMessage, long startTime){
+            this.timeString = timeMessage;
+            this.time = startTime;
+            System.out.println("timer set to : " + this.time / 1000 + "second");
+        }
+        
         public TimerManager(String timeMessage){
             this.timeString = timeMessage;
         }
@@ -65,7 +71,7 @@ public class Client extends UnicastRemoteObject implements IClient, IBidSoldObse
     }
 
     private static final Logger LOGGER = Logger.getLogger(Client.class.getCanonicalName());
-    private static final long TIME_TO_RAISE_BID = 30000;
+    private static final long TIME_TO_RAISE_BID = 40000;
     private static final long TIME_TO_REFRESH = 1000;
 
     private ClientBean identity;
@@ -112,7 +118,7 @@ public class Client extends UnicastRemoteObject implements IClient, IBidSoldObse
         currentAuction = auction;
 
         timer = new Timer();
-        timer.schedule(new TimerManager(timeElapsed),0, TIME_TO_REFRESH);
+        timer.schedule(new TimerManager(timeElapsed, auction.getBidTimer()*1000),0, TIME_TO_REFRESH);
 
         state = ClientState.WAITING;
 
@@ -174,7 +180,7 @@ public class Client extends UnicastRemoteObject implements IClient, IBidSoldObse
         }
 
         timer = new Timer();
-        timer.schedule(new TimerManager(timeElapsed),0, TIME_TO_REFRESH);
+        timer.schedule(new TimerManager(timeElapsed, currentAuction.getBidTimer()*1000),0, TIME_TO_REFRESH);
 
         state = ClientState.WAITING;
 

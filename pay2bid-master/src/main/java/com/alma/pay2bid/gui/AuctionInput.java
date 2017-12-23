@@ -18,10 +18,13 @@ public class AuctionInput extends JPanel {
     private JTextField  name;
     public JTextField  price;
     private JTextField  description;
-    private JLabel statusLabel;
+    private JTextField  bidTimer;
+   
+
+	private JLabel statusLabel;
 
     public AuctionInput(IClient client) {
-        setLayout(new GridLayout(4,3,5,5));
+        setLayout(new GridLayout(5,4,6,6));
 
         // Frame used to displayed the input
         auctionFrame = new JFrame("Add a new auction");
@@ -43,6 +46,11 @@ public class AuctionInput extends JPanel {
         JLabel descriptionLabel = new JLabel("Description : ");
         description = new JTextField();
         descriptionLabel.setLabelFor(description);
+        
+        // Field "bidTimer"
+        JLabel bidTimerLabel = new JLabel("Bid timer (sec) : ");
+        bidTimer = new JTextField();
+        bidTimerLabel.setLabelFor(bidTimer);
 
         // Info label at the bottom of the frame
         statusLabel = new JLabel("", JLabel.CENTER);
@@ -61,6 +69,9 @@ public class AuctionInput extends JPanel {
 
         add(descriptionLabel);
         add(description);
+        
+        add(bidTimerLabel);
+        add(bidTimer);
 
         add(auctionSend);
 
@@ -92,4 +103,9 @@ public class AuctionInput extends JPanel {
     public JLabel getStatusLabel() {
         return statusLabel;
     }
+    
+    public String getBidTimer() {
+		return bidTimer.getText();
+	}
+	
 }
