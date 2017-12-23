@@ -36,25 +36,51 @@ public class ClientGui {
     private Client client;
     private IServer server;
     private HashMap<UUID, AuctionView> auctionList;
-
+    Dimension dimension = new Dimension(500, 500);
     /**
      * Main frame & elements
      */
-    private JFrame mainFrame;
-    private JLabel statusLabel;
-    private JPanel mainPanel;
-    private JPanel auctionPanel;
+    private JFrame loginFrame;
+    private AppFrame appFrame;
+    
+    //private JPanel mainPanel;
+    //private JPanel auctionPanel;
 
     /**
      * Constructor
      * @param client
      */
-    public ClientGui(Client client, IServer server) throws RemoteException, InterruptedException {
-        this.client = client;
+    public ClientGui(IServer server) throws RemoteException, InterruptedException {
+    	//this.client = client;
         this.server = server;
         auctionList = new HashMap<UUID, AuctionView>();
-        server.register(this.client);
+        
+        //display the login frame and if correctly logged in, call createGui
+        loginFrame = new LoginFrame(this, server);
+        loginFrame.setSize(500,200);
+        
+        loginFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent){
+                exit(0);
+            }
+        });    
+        
+    }
+    
+    public void setClient(Client client) {
+    	this.client = client;
+    }
 
+
+    /**
+     * Initialize the GUI & populate it with the base elements
+     */
+    private void createAppGui() {
+        // Create the Main JFrame
+    	
+        appFrame = new AppFrame(this, "Pay2Bid", dimension);
+        
         client.addNewAuctionObserver(new INewAuctionObserver() {
             @Override
             public void updateNewAuction(AuctionBean auction) {
@@ -62,23 +88,8 @@ public class ClientGui {
                 addAuctionPanel(auction);
             }
         });
-        // paint the GUI
-        createGui();
-    }
-
-
-    /**
-     * Initialize the GUI & populate it with the base elements
-     */
-    private void createGui() {
-        // Create the Main JFrame
-        mainFrame = new JFrame("Pay2Bid - Auction");
-        Dimension dimension = new Dimension(500, 500);
-        mainFrame.setSize(500, 500);
-        mainFrame.setMaximumSize(dimension);
-        mainFrame.setLayout(new BorderLayout());
-
-        mainFrame.addWindowListener(new WindowAdapter() {
+        
+        appFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent){
                 try {
@@ -88,49 +99,20 @@ public class ClientGui {
                 }
                 exit(0);
             }
-        });
-
-        // Create the Menu bar
-        JMenuBar menuBar = new JMenuBar();
-        JMenu menu = new JMenu("Options");
-        JMenuItem newAuction = new JMenuItem("New Auction");
-        newAuction.setActionCommand("newAuction");
-        newAuction.addActionListener(new AuctionInputListener(this));
-        menu.add(newAuction);
-
-        menuBar.add(menu);
-        mainFrame.setJMenuBar(menuBar);
-
-        // Create the Frame Header
-        JLabel headerLabel = new JLabel("", JLabel.CENTER);
-        headerLabel.setText("Current Auction");
-
-        statusLabel = new JLabel("", JLabel.CENTER);
-        statusLabel.setBackground(Color.red);
-        statusLabel.setSize(400,0);
-
-        mainFrame.add(headerLabel, BorderLayout.PAGE_START);
-
-        // Create the Main panel which will contains the GUI's elements
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-
-        auctionPanel = new JPanel();
-        auctionPanel.setLayout(new BoxLayout(auctionPanel, BoxLayout.Y_AXIS));
-        mainPanel.add(auctionPanel);
-        mainPanel.setMaximumSize(dimension);
-
-        JScrollPane scrollPane = new JScrollPane(mainPanel);
-        mainFrame.add(scrollPane, BorderLayout.CENTER);
-
-        mainFrame.add(statusLabel, BorderLayout.PAGE_END);
+        });          
     }
 
     /**
      * Show the client GUI
      */
     public void show(){
-        mainFrame.setVisible(true);
+        loginFrame.setVisible(true);
+    }
+    
+    public void showApp() {
+    	loginFrame.dispose();
+    	createAppGui();
+    	appFrame.setVisible(true);
     }
 
     /**
@@ -145,7 +127,7 @@ public class ClientGui {
 
             JButton raiseBidButton = new JButton("Raise the bid");
             raiseBidButton.setActionCommand("raiseBid");
-            raiseBidButton.addActionListener(new RaiseBidButtonListener(client, client.getServer(), auction, statusLabel));
+            raiseBidButton.addActionListener(new RaiseBidButtonListener(client, client.getServer(), auction, appFrame.getStatusLabel()));
             auction.setRaiseButton(raiseBidButton);
 
             //Now add the observer to receive all price updates
@@ -180,12 +162,11 @@ public class ClientGui {
                 }
             });
 
-            auctionPanel.add(auction.getAuctionPanel());
+            appFrame.addAuction(auction.getAuctionPanel());
             auctionList.put(auctionBean.getUUID(), auction);
-
-            mainPanel.revalidate();
-            mainPanel.repaint();
-
+            
+            appFrame.updateGUI();
+            
         } else {
             LOGGER.warning("Trying to add a duplicated auction to the list - Auction : " + auctionBean.toString());
         }
@@ -204,8 +185,7 @@ public class ClientGui {
         auction.getAuctionPanel().revalidate();
         auction.getAuctionPanel().repaint();
 
-        mainPanel.revalidate();
-        mainPanel.repaint();
+        appFrame.updateGUI();
     }
 
     /**
