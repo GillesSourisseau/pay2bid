@@ -56,7 +56,7 @@ public class Server extends UnicastRemoteObject implements IServer {
     private HashMap<IClient, Integer> bidByClient = new HashMap<IClient, Integer>();
     private HashMap<String, String> userDatabase = new HashMap<String,String>();
 
-    private static final int MIN_NUMBER_CLIENTS = 3;
+    private static final int MIN_NUMBER_CLIENTS = 1;
 
     /**
      * Constructor
