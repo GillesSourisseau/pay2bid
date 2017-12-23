@@ -4,6 +4,11 @@ import com.alma.pay2bid.bean.AuctionBean;
 import com.alma.pay2bid.client.ClientState;
 import com.alma.pay2bid.client.IClient;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
@@ -39,6 +44,8 @@ public class Server extends UnicastRemoteObject implements IServer {
 
     private static final Logger LOGGER = Logger.getLogger(Server.class.getCanonicalName());
     private static final long CHECK_CONN_DELAY = 30000;
+    
+    private static final String USER_DATABASE = "res/user_database.txt";
 
     private boolean auctionInProgress = false;
     private AuctionBean currentAuction;
@@ -47,8 +54,9 @@ public class Server extends UnicastRemoteObject implements IServer {
     private List<IClient> clients = new ArrayList<IClient>();
     private Queue<AuctionBean> auctions = new LinkedList<AuctionBean>();
     private HashMap<IClient, Integer> bidByClient = new HashMap<IClient, Integer>();
+    private HashMap<String, String> userDatabase = new HashMap<String,String>();
 
-    private static final int MIN_NUMBER_CLIENTS = 1;
+    private static final int MIN_NUMBER_CLIENTS = 3;
 
     /**
      * Constructor
@@ -58,6 +66,22 @@ public class Server extends UnicastRemoteObject implements IServer {
         super();
         Timer daemonTimer = new Timer();
         daemonTimer.schedule(new ConnectionDaemon(), 0, CHECK_CONN_DELAY);
+        
+        //load user database in memory
+        try{
+        	FileInputStream fis = new FileInputStream(USER_DATABASE);
+        	ObjectInputStream ois = new ObjectInputStream(fis);
+        	userDatabase = (HashMap<String,String>) ois.readObject();
+        	ois.close();
+        	fis.close();
+        }catch(IOException ioe){
+        	ioe.printStackTrace();
+        	return;
+        }catch(ClassNotFoundException c){
+        	System.out.println("Class not found");
+        	c.printStackTrace();
+        	return;
+        }
     }
 
     /**
@@ -191,4 +215,34 @@ public class Server extends UnicastRemoteObject implements IServer {
             }
         }
     }
+
+	@Override
+	public void registerCredentials(String username, String password) throws RemoteException, InterruptedException {
+		userDatabase.put(username, password);
+		try{
+			FileOutputStream fos =
+					new FileOutputStream(USER_DATABASE);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(userDatabase);
+			oos.close();
+			fos.close();
+		}catch(IOException ioe){
+			ioe.printStackTrace();
+		}
+	}
+
+	@Override
+	public boolean verifyCredentials(String username, String password) throws RemoteException, InterruptedException{
+		System.out.println();
+		System.out.println("server: "+username+" "+password);
+		System.out.println();
+		if(userDatabase == null) {
+			System.out.println("server: userdatabase is null");
+		}
+		if(userDatabase.containsKey(username) && userDatabase.get(username).equals(password)) {
+			return true;
+		}else {
+			return false;
+		}
+	}
 }

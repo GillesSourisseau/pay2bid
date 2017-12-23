@@ -91,10 +91,10 @@ public class Client extends UnicastRemoteObject implements IClient, IBidSoldObse
      * @param name
      * @throws RemoteException
      */
-    public Client(IServer server, String name) throws RemoteException {
+    public Client(IServer server, String name, String password, String username) throws RemoteException {
         super();
 
-        identity = new ClientBean(UUID.randomUUID(), name, "default password", name);
+        identity = new ClientBean(UUID.randomUUID(), name, password, username);
         this.server = server;
         this.name = name;
         state = ClientState.WAITING;
