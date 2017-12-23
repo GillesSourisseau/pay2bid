@@ -13,6 +13,7 @@ public class AuctionBean implements IBean {
     private int price;
     private String name;
     private String description;
+    private long bidTimer;
 
     public AuctionBean(int price, String name, String description) {
         this.price = price;
@@ -52,5 +53,13 @@ public class AuctionBean implements IBean {
     public void setDescription(String description) {
         this.description = description;
     }
+
+	public long getBidTimer() {
+		return bidTimer;
+	}
+
+	public void setBidTimer(long lifeTime) {
+		this.bidTimer = lifeTime;
+	}
 
 }

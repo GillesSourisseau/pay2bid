@@ -143,11 +143,15 @@ public class ClientGui {
             client.addBidSoldObserver(new IBidSoldObserver() {
                 @Override
                 public void updateBidSold(IClient client) {
+                	if (client != null) {
                     try {
                         auction.setWinner(client.getName());
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                    } catch (RemoteException e) {                    	
+                        e.printStackTrace();                        
                     }
+                } else {
+                	auction.setWinner("Nobody");
+                }
                 }
             });
 
