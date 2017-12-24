@@ -143,6 +143,11 @@ public class Server extends UnicastRemoteObject implements IServer {
     public void disconnect(IClient client) throws RemoteException {
         LOGGER.info("Disconnect : Client " + client.toString());
         clients.remove(client);
+        nbParticipants--;
+        //remove its bid from bidByClient
+        if(bidByClient.containsKey(client)) {
+        	bidByClient.remove(client);
+        }
     }
 
     /**
