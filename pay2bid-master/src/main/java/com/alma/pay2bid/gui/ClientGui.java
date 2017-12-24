@@ -129,6 +129,17 @@ public class ClientGui {
             raiseBidButton.setActionCommand("raiseBid");
             raiseBidButton.addActionListener(new RaiseBidButtonListener(client, client.getServer(), auction, appFrame.getStatusLabel()));
             auction.setRaiseButton(raiseBidButton);
+            
+            // quick raise buttons
+            JButton quickRaiseButton_10 = new JButton("+10%");
+            JButton quickRaiseButton_25 = new JButton("+25%");
+            quickRaiseButton_10.setActionCommand("quickRaise10");
+            quickRaiseButton_25.setActionCommand("quickRaise25");
+            quickRaiseButton_10.addActionListener(new RaiseBidButtonListener(client, client.getServer(), auction, appFrame.getStatusLabel()));
+            quickRaiseButton_25.addActionListener(new RaiseBidButtonListener(client, client.getServer(), auction, appFrame.getStatusLabel()));
+            auction.setQuickRaiseButton_10(quickRaiseButton_10);
+            auction.setQuickRaiseButton_25(quickRaiseButton_25);
+            
 
             //Now add the observer to receive all price updates
             client.addNewPriceObserver(new INewPriceObserver() {
